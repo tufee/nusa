@@ -8,13 +8,13 @@ export class Receita implements IReceita {
   medico: IMedico;
   paciente: IPaciente;
   medicamento: IMedicamento;
-  dataPrescricao: Date;
+  data_prescricao: Date;
 
   constructor(properties: IReceita) {
     this.id = properties.id;
     this.medico = properties.medico;
     this.paciente = properties.paciente;
     this.medicamento = properties.medicamento;
-    this.dataPrescricao = properties.dataPrescricao;
+    this.data_prescricao = properties.data_prescricao;
   }
 }

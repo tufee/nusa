@@ -4,12 +4,12 @@ export class Paciente implements IPaciente {
   id: string;
   nome: string;
   cpf: string;
-  dataNascimento: Date;
+  data_nascimento: Date;
 
   constructor(properties: IPaciente) {
     this.id = properties.id;
     this.nome = properties.nome;
     this.cpf = properties.cpf;
-    this.dataNascimento = properties.dataNascimento;
+    this.data_nascimento = properties.data_nascimento;
   }
 }

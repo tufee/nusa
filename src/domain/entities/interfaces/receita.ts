@@ -7,5 +7,5 @@ export interface IReceita {
   medico: IMedico;
   paciente: IPaciente;
   medicamento: IMedicamento;
-  dataPrescricao: Date;
+  data_prescricao: Date;
 }
