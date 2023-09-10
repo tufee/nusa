@@ -23,3 +23,11 @@ export const createUserSchema = z
       path: ['data_nascimento'],
     }
   );
+
+export const createMedicamentoSchema = z
+  .object({
+    nome: z.string(),
+    categoria: z.string(),
+    codigo_anvisa: z.string(),
+  })
+  .required();
