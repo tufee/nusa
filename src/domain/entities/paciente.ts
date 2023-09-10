@@ -5,11 +5,13 @@ export class Paciente implements IPaciente {
   nome: string;
   cpf: string;
   data_nascimento: Date;
+  senha: string;
 
   constructor(properties: IPaciente) {
     this.id = properties.id;
     this.nome = properties.nome;
     this.cpf = properties.cpf;
     this.data_nascimento = properties.data_nascimento;
+    this.senha = properties.senha;
   }
 }
