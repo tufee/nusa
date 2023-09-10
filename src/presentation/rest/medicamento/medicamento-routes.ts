@@ -3,7 +3,7 @@ import { medicamentoController } from './medicamento-factory';
 
 const medicamentoRouter = Router();
 
-medicamentoRouter.post('/create', (request, response) => {
+medicamentoRouter.post('/create/medicamento', (request, response) => {
   medicamentoController.create(request, response);
 });
 
