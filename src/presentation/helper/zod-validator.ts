@@ -31,3 +31,22 @@ export const createMedicamentoSchema = z
     codigo_anvisa: z.string(),
   })
   .required();
+
+export const createReceitaSchema = z
+  .object({
+    medico_id: z.string().uuid(),
+    paciente_id: z.string().uuid(),
+    medicamento_id: z.string().uuid(),
+    data_prescricao: z.string(),
+  })
+  .required()
+  .refine(
+    data => {
+      const dataPrescricao = new Date(data.data_prescricao);
+      return dataPrescricao.toString() !== 'Invalid Date';
+    },
+    {
+      message: 'Data de prescrição inválida',
+      path: ['data_prescricao]'],
+    }
+  );

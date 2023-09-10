@@ -1,55 +1,50 @@
-import { createMedicamentoSchema, createUserSchema } from './zod-validator';
+import {
+  createMedicamentoSchema,
+  createReceitaSchema,
+  createUserSchema,
+} from './zod-validator';
 
 describe('ZodValidator', () => {
   describe('createUserSchema', () => {
-    it('Deve aceitar dados de usuário válidos', () => {
-      const usuarioValido = {
-        nome: 'John Doe',
-        cpf: '12345678901',
-        data_nascimento: '1990-01-01',
-        senha: 'password123',
-        confirma_senha: 'password123',
-      };
+    const usuarioData = {
+      nome: 'John Doe',
+      cpf: '12345678901',
+      senha: 'password123',
+    };
 
-      expect(() => createUserSchema.parse(usuarioValido)).not.toThrow();
+    it('Deve aceitar dados de usuário válidos', () => {
+      expect(() =>
+        createUserSchema.parse({
+          ...usuarioData,
+          data_nascimento: '07/03/1994',
+          confirma_senha: 'password123',
+        })
+      ).not.toThrow();
     });
 
     it('Deve rejeitar dados de usuário com senhas diferentes', () => {
-      const usuarioComSenhasDiferentes = {
-        nome: 'John Doe',
-        cpf: '12345678901',
-        data_nascimento: '1990-01-01',
-        senha: 'password123',
-        confirma_senha: 'differentpassword',
-      };
-
       expect(() =>
-        createUserSchema.parse(usuarioComSenhasDiferentes)
+        createUserSchema.parse({
+          ...usuarioData,
+          data_nascimento: '07/03/1994',
+          confirma_senha: 'password',
+        })
       ).toThrowError('Senhas não conferem');
     });
 
     it('Deve rejeitar dados de usuário com data de nascimento inválida', () => {
-      const usuarioComDataDeNascimentoInvalida = {
-        nome: 'John Doe',
-        cpf: '12345678901',
-        data_nascimento: 'invalid-date',
-        senha: 'password123',
-        confirma_senha: 'password123',
-      };
-
       expect(() =>
-        createUserSchema.parse(usuarioComDataDeNascimentoInvalida)
+        createUserSchema.parse({
+          ...usuarioData,
+          data_nascimento: 'invalid-date',
+          confirma_senha: 'password123',
+        })
       ).toThrowError('Data de nascimento inválida');
     });
 
     it('Deve rejeitar dados de usuário com campos em falta', () => {
-      const usarioComCamposEmFalta = {
-        nome: 'John Doe',
-        cpf: '12345678901',
-      };
-
       expect(() =>
-        createUserSchema.parse(usarioComCamposEmFalta)
+        createUserSchema.parse(usuarioData)
       ).toThrowError();
     });
   });
@@ -87,6 +82,32 @@ describe('ZodValidator', () => {
       expect(() =>
         createMedicamentoSchema.parse(medicamentoData)
       ).toThrowError();
+    });
+  });
+
+  describe('createReceitaSchema', () => {
+    const receitaData = {
+      medico_id: 'c9f47d0c-df15-4d15-9d6e-329235c5d4d3',
+      paciente_id: '0ecf2e35-44e9-4e0c-b9b3-ae383ba9e5a7',
+      medicamento_id: '3d3b4b2b-e558-4b89-926b-5d0f21b86e45',
+    };
+
+    it('Deve validar dados de receita corretos', async () => {
+      expect(() =>
+        createReceitaSchema.parse({
+          ...receitaData,
+          data_prescricao: '07/03/1994',
+        })
+      ).not.toThrow();
+    });
+
+    it('Deve lançar erro ao validar dados de receita incorretos', () => {
+      expect(() =>
+        createReceitaSchema.parse({
+          ...receitaData,
+          data_prescricao: 'invalid-date',
+        })
+      ).toThrowError('Data de prescrição inválida');
     });
   });
 });
