@@ -13,7 +13,7 @@ export class PacienteRepository implements IPacienteRepository {
     return createdPaciente;
   }
 
-  async findByCPF(cpf: string): Promise<IPaciente> {
+  async findByCPF(cpf: string): Promise<IPaciente | null> {
     const [paciente] = await knex<IPaciente>('pacientes')
       .select('*')
       .where({ cpf });
