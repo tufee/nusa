@@ -17,7 +17,8 @@ export class CreateMedicoUseCase {
     const medicoValidado = await createUserSchema.safeParseAsync(medico);
 
     if (!medicoValidado.success) {
-      throw new Error(medicoValidado.error.message);
+      console.warn(medicoValidado.error);
+      throw new Error('Erro ao validar médico');
     }
 
     const medicoCadastrado = await this.medicoRepository.findByCPF(
@@ -25,7 +26,7 @@ export class CreateMedicoUseCase {
     );
 
     if (medicoCadastrado) {
-      throw new Error('Medico já cadastrado');
+      throw new Error('Médico já cadastrado');
     }
 
     const hashSenha = await this.encrypter.encrypt(medicoValidado.data.senha);

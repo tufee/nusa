@@ -1,3 +1,4 @@
+import { ZodError } from 'zod';
 import { PacienteRepository } from '../../data/repositories/paciente-repository';
 import { Encrypter } from '../../presentation/helper/encrypter';
 import { createUserSchema } from '../../presentation/helper/zod-validator';
@@ -22,41 +23,42 @@ describe('CreatePacienteUseCase', () => {
     jest.clearAllMocks();
   });
 
+  const pacienteData = {
+    nome: 'John Doe',
+    cpf: '76701025005',
+    data_nascimento: new Date('1990-01-01'),
+    senha: 'password',
+    confirma_senha: 'password',
+  };
+
   it('Deve criar um paciente com sucesso', async () => {
     mockCreateUserSchema.mockResolvedValue({
       success: true,
       data: {
-        nome: 'John Doe',
-        cpf: '76701025005',
+        nome: pacienteData.nome,
+        cpf: pacienteData.cpf,
         data_nascimento: '1990-01-01',
-        senha: 'password',
-        confirma_senha: 'password',
+        senha: pacienteData.senha,
+        confirma_senha: pacienteData.confirma_senha,
       },
     });
+
     pacienteRepositoryMock.findByCPF.mockResolvedValue(null);
     encrypterMock.encrypt.mockResolvedValue('hashedPassword');
     pacienteRepositoryMock.create.mockResolvedValue({
       id: 'UUID',
-      nome: 'John Doe',
-      cpf: '76701025005',
-      data_nascimento: new Date('1990-01-01'),
+      nome: pacienteData.nome,
+      cpf: pacienteData.cpf,
+      data_nascimento: pacienteData.data_nascimento,
       senha: 'hashedPassword',
     });
-
-    const pacienteData = {
-      nome: 'John Doe',
-      cpf: '76701025005',
-      data_nascimento: new Date('1990-01-01'),
-      senha: 'password',
-      confirma_senha: 'password',
-    };
 
     const resultado = await createPacienteUseCase.execute(pacienteData);
 
     expect(resultado).toEqual({
       id: 'UUID',
-      nome: 'John Doe',
-      cpf: '76701025005',
+      nome: pacienteData.nome,
+      cpf: pacienteData.cpf,
       data_nascimento: expect.any(Date),
     });
 
@@ -74,24 +76,47 @@ describe('CreatePacienteUseCase', () => {
   });
 
   it('Deve lançar erro ao tentar criar um paciente com CPF já cadastrado', async () => {
-    pacienteRepositoryMock.findByCPF.mockResolvedValue({
-      id: 'UUID',
-      nome: 'John Doe',
-      cpf: '76701025005',
-      data_nascimento: new Date('1990-01-01'),
-      senha: 'hashedPassword',
+    mockCreateUserSchema.mockResolvedValue({
+      success: true,
+      data: {
+        nome: pacienteData.nome,
+        cpf: pacienteData.cpf,
+        data_nascimento: '1990-01-01',
+        senha: pacienteData.senha,
+        confirma_senha: pacienteData.confirma_senha,
+      },
     });
 
-    const pacienteData = {
-      nome: 'John Doe',
-      cpf: '76701025005',
-      data_nascimento: new Date('1990-01-01'),
-      senha: 'password',
-      confirma_senha: 'password',
-    };
+    pacienteRepositoryMock.findByCPF.mockResolvedValue({
+      id: 'UUID',
+      nome: pacienteData.nome,
+      cpf: pacienteData.cpf,
+      data_nascimento: pacienteData.data_nascimento,
+      senha: 'hashedPassword',
+    });
 
     await expect(createPacienteUseCase.execute(pacienteData)).rejects.toThrow(
       'Paciente já cadastrado'
     );
+  });
+
+  it('Deve lançar erro ao fornecer dados do paciente inválidos', async () => {
+    mockCreateUserSchema.mockResolvedValue({
+      success: false,
+      // eslint-disable-next-line  @typescript-eslint/no-explicit-any
+      error: ZodError as any,
+    });
+
+    const pacienteData = {
+      nome: '',
+      cpf: 'invalid-cpf',
+      data_nascimento: new Date('1990-01-01'),
+      senha: 'invalid',
+      confirma_senha: 'invalid-password',
+    };
+
+    await expect(
+      createPacienteUseCase.execute(pacienteData)
+    ).rejects.toThrowError('Erro ao validar paciente');
   });
 });

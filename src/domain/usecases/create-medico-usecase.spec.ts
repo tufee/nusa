@@ -1,3 +1,4 @@
+import { ZodError } from 'zod';
 import { MedicoRepository } from '../../data/repositories/medico-repository';
 import { Encrypter } from '../../presentation/helper/encrypter';
 import { createUserSchema } from '../../presentation/helper/zod-validator';
@@ -22,6 +23,14 @@ describe('CreateMedicoUseCase', () => {
     jest.clearAllMocks();
   });
 
+  const medicoData = {
+    nome: 'John Doe',
+    cpf: '76701025005',
+    data_nascimento: new Date('1990-01-01'),
+    senha: 'password',
+    confirma_senha: 'password',
+  };
+
   it('Deve criar um medico com sucesso', async () => {
     mockCreateUserSchema.mockResolvedValue({
       success: true,
@@ -43,20 +52,12 @@ describe('CreateMedicoUseCase', () => {
       senha: 'hashedPassword',
     });
 
-    const medicoData = {
-      nome: 'John Doe',
-      cpf: '76701025005',
-      data_nascimento: new Date('1990-01-01'),
-      senha: 'password',
-      confirma_senha: 'password',
-    };
-
     const resultado = await createMedicoUseCase.execute(medicoData);
 
     expect(resultado).toEqual({
       id: 'UUID',
-      nome: 'John Doe',
-      cpf: '76701025005',
+      nome: medicoData.nome,
+      cpf: medicoData.cpf,
       data_nascimento: expect.any(Date),
     });
 
@@ -72,24 +73,49 @@ describe('CreateMedicoUseCase', () => {
   });
 
   it('Deve lançar erro ao tentar criar um medico com CPF já cadastrado', async () => {
+    mockCreateUserSchema.mockResolvedValue({
+      success: true,
+      data: {
+        nome: medicoData.nome,
+        cpf: medicoData.cpf,
+        data_nascimento: '1990-01-01',
+        senha: medicoData.senha,
+        confirma_senha: medicoData.confirma_senha,
+      },
+    });
+
     medicoRepositoryMock.findByCPF.mockResolvedValue({
       id: 'UUID',
-      nome: 'John Doe',
-      cpf: '76701025005',
-      data_nascimento: new Date('1990-01-01'),
+      nome: medicoData.nome,
+      cpf: medicoData.cpf,
+      data_nascimento: medicoData.data_nascimento,
       senha: 'hashedPassword',
     });
 
+    await expect(createMedicoUseCase.execute(medicoData)).rejects.toThrowError(
+      'Médico já cadastrado'
+    );
+
+    expect(medicoRepositoryMock.findByCPF).toHaveBeenCalledWith(medicoData.cpf);
+  });
+
+  it('Deve lançar erro ao fornecer dados do médico inválidos', async () => {
+    mockCreateUserSchema.mockResolvedValue({
+      success: false,
+      // eslint-disable-next-line  @typescript-eslint/no-explicit-any
+      error: ZodError as any,
+    });
+
     const medicoData = {
-      nome: 'John Doe',
-      cpf: '76701025005',
+      nome: '',
+      cpf: 'invalid-cpf',
       data_nascimento: new Date('1990-01-01'),
-      senha: 'password',
-      confirma_senha: 'password',
+      senha: 'invalid',
+      confirma_senha: 'invalid-password',
     };
 
-    await expect(createMedicoUseCase.execute(medicoData)).rejects.toThrow(
-      'Medico já cadastrado'
+    await expect(createMedicoUseCase.execute(medicoData)).rejects.toThrowError(
+      'Erro ao validar médico'
     );
   });
 });

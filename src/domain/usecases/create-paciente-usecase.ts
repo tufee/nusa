@@ -17,7 +17,8 @@ export class CreatePacienteUseCase {
     const pacienteValidado = await createUserSchema.safeParseAsync(paciente);
 
     if (!pacienteValidado.success) {
-      throw new Error(pacienteValidado.error.message);
+      console.warn(pacienteValidado.error);
+      throw new Error('Erro ao validar paciente');
     }
 
     const pacienteCadastrado = await this.pacienteRepository.findByCPF(
