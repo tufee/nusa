@@ -1,3 +1,4 @@
+import { ZodError } from 'zod';
 import { MedicamentoRepository } from '../../data/repositories/medicamento-repository';
 import { createMedicamentoSchema } from '../../presentation/helper/zod-validator';
 import { CreateMedicamentoUseCase } from './create-medicamento-usecase';
@@ -17,34 +18,25 @@ describe('CreateMedicamentoUseCase', () => {
     'safeParseAsync'
   );
 
-  const payloadRetornoMock = {
-    id: 'UUID',
+  const medicamentoData = {
     nome: 'dipirona',
     categoria: 'ANALGESICOS',
     codigo_anvisa: '1018600360022',
   };
 
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
   it('Deve criar um medicamento com sucesso', async () => {
-    mockCreateMedicamentoSchema.mockResolvedValue({
-      success: true,
-      data: {
-        nome: 'dipirona',
-        categoria: 'ANALGESICOS',
-        codigo_anvisa: '1018600360022',
-      },
+    medicamentoRepositoryMock.create.mockResolvedValue({
+      ...medicamentoData,
+      id: 'UUID',
     });
-
-    medicamentoRepositoryMock.create.mockResolvedValue(payloadRetornoMock);
-
-    const medicamentoData = {
-      nome: 'dipirona',
-      categoria: 'ANALGESICOS',
-      codigo_anvisa: '1018600360022',
-    };
 
     const resultado = await createMedicamentoUseCase.execute(medicamentoData);
 
-    expect(resultado).toEqual(payloadRetornoMock);
+    expect(resultado).toEqual({ ...medicamentoData, id: 'UUID' });
 
     expect(medicamentoRepositoryMock.findByCodigoAnvisa).toHaveBeenCalledWith(
       medicamentoData.codigo_anvisa
@@ -56,27 +48,25 @@ describe('CreateMedicamentoUseCase', () => {
   });
 
   it('Deve lançar erro ao tentar criar um medicamento com código ANVISA já cadastrado', async () => {
-    mockCreateMedicamentoSchema.mockResolvedValue({
-      success: true,
-      data: {
-        nome: 'dipirona',
-        categoria: 'ANALGESICOS',
-        codigo_anvisa: '1018600360022',
-      },
+    medicamentoRepositoryMock.findByCodigoAnvisa.mockResolvedValue({
+      ...medicamentoData,
+      id: 'UUID',
     });
-
-    medicamentoRepositoryMock.findByCodigoAnvisa.mockResolvedValue(
-      payloadRetornoMock
-    );
-
-    const medicamentoData = {
-      nome: 'dipirona',
-      categoria: 'ANALGESICOS',
-      codigo_anvisa: '1018600360022',
-    };
 
     await expect(
       createMedicamentoUseCase.execute(medicamentoData)
     ).rejects.toThrow('medicamento já cadastrado');
+  });
+
+  it('Deve lançar erro ao fornecer dados do médico inválidos', async () => {
+    mockCreateMedicamentoSchema.mockResolvedValue({
+      success: false,
+      // eslint-disable-next-line  @typescript-eslint/no-explicit-any
+      error: ZodError as any,
+    });
+
+    await expect(
+      createMedicamentoUseCase.execute(medicamentoData)
+    ).rejects.toThrowError('Erro ao validar medicamento');
   });
 });

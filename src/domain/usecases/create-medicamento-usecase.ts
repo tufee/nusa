@@ -10,7 +10,8 @@ export class CreateMedicamentoUseCase {
       await createMedicamentoSchema.safeParseAsync(medicamento);
 
     if (!medicamentoValidado.success) {
-      throw new Error(medicamentoValidado.error.message);
+      console.warn(medicamentoValidado.error);
+      throw new Error('Erro ao validar medicamento');
     }
 
     const medicamentoCadastrado =
