@@ -1,11 +1,7 @@
-import { IMedicamento } from './medicamento';
-import { IMedico } from './medico';
-import { IPaciente } from './paciente';
-
 export interface IReceita {
   id: string;
-  medico: IMedico;
-  paciente: IPaciente;
-  medicamento: IMedicamento;
+  medico_id: string;
+  paciente_id: string;
+  medicamento_id: string;
   data_prescricao: Date;
 }
