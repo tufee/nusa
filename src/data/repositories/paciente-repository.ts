@@ -6,7 +6,7 @@ import { IPacienteRepository } from './interfaces/paciente';
 const knex = Knex(config);
 
 export class PacienteRepository implements IPacienteRepository {
-  async create(paciente: Omit<IPaciente, 'id'>): Promise<IPaciente> {
+  async create(paciente: Omit<IPaciente, 'id' | 'tipo'>): Promise<IPaciente> {
     const [createdPaciente] = await knex<IPaciente>('pacientes')
       .insert(paciente)
       .returning('*');

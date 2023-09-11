@@ -4,4 +4,5 @@ export interface IPessoa {
   cpf: string;
   data_nascimento: Date;
   senha: string;
+  tipo: string;
 }

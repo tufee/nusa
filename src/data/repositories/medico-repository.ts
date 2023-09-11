@@ -6,7 +6,7 @@ import { IMedicoRepository } from './interfaces/medico';
 const knex = Knex(config);
 
 export class MedicoRepository implements IMedicoRepository {
-  async create(medico: Omit<IMedico, 'id'>): Promise<IMedico> {
+  async create(medico: Omit<IMedico, 'id' | 'tipo'>): Promise<IMedico> {
     const [createdMedico] = await knex<IMedico>('medicos')
       .insert(medico)
       .returning('*');
