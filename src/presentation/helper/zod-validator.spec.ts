@@ -2,6 +2,7 @@ import {
   createMedicamentoSchema,
   createReceitaSchema,
   createUserSchema,
+  loginInputSchema,
 } from './zod-validator';
 
 describe('ZodValidator', () => {
@@ -43,9 +44,7 @@ describe('ZodValidator', () => {
     });
 
     it('Deve rejeitar dados de usuário com campos em falta', () => {
-      expect(() =>
-        createUserSchema.parse(usuarioData)
-      ).toThrowError();
+      expect(() => createUserSchema.parse(usuarioData)).toThrowError();
     });
   });
 
@@ -108,6 +107,49 @@ describe('ZodValidator', () => {
           data_prescricao: 'invalid-date',
         })
       ).toThrowError('Data de prescrição inválida');
+    });
+  });
+
+  describe('loginInputSchema', () => {
+    it('deve passar na validação com dados válidos', () => {
+      const validData = {
+        cpf: '12345678901',
+        senha: 'senha123',
+      };
+
+      const result = loginInputSchema.safeParse(validData);
+
+      expect(result.success).toBe(true);
+    });
+
+    it('deve falhar na validação com CPF inválido', () => {
+      const invalidData = {
+        cpf: '12345',
+        senha: 'senha123',
+      };
+
+      const result = loginInputSchema.safeParse(invalidData);
+
+      expect(result.success).toBe(false);
+    });
+
+    it('deve falhar na validação com senha muito curta', () => {
+      const invalidData = {
+        cpf: '12345678901',
+        senha: '123',
+      };
+
+      const result = loginInputSchema.safeParse(invalidData);
+
+      expect(result.success).toBe(false);
+    });
+
+    it('deve falhar na validação com dados ausentes', () => {
+      const invalidData = {};
+
+      const result = loginInputSchema.safeParse(invalidData);
+
+      expect(result.success).toBe(false);
     });
   });
 });

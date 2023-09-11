@@ -50,3 +50,10 @@ export const createReceitaSchema = z
       path: ['data_prescricao]'],
     }
   );
+
+export const loginInputSchema = z
+  .object({
+    cpf: z.string().length(11),
+    senha: z.string().min(6),
+  })
+  .required();
