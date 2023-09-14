@@ -4,9 +4,16 @@ import { medicamentoRouter } from './rest/medicamento/medicamento-routes';
 import { medicoRouter } from './rest/medico/medico-routes';
 import { pacienteRouter } from './rest/paciente/paciente-routes';
 import { receitaRouter } from './rest/receita/receita-routes';
+import cors from 'cors';
 
 const app = express();
 const port = process.env.PORT || 3000;
+
+import swaggerUi from 'swagger-ui-express';
+import swaggerDocument from '../../swagger.json';
+
+app.use(cors());
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 app.use(express.json());
 app.use(pacienteRouter);

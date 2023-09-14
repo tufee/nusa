@@ -1,0 +1,257 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "API de geração de receitas",
+    "description": "Essa API tem como objetivo a criação de receitas",
+    "version": "1.0.0"
+  },
+  "servers": [{ "description": "API", "url": "http://localhost:3000" }],
+  "paths": {
+    "/create/paciente": {
+      "post": {
+        "tags": ["Paciente"],
+        "summary": "Cadastrar um novo paciente",
+        "description": "Essa rota será responsável por cadastrar um novo paciente",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/paciente" },
+              "examples": {
+                "paciente": {
+                  "value": {
+                    "nome": "Paulo",
+                    "cpf": "65552148053",
+                    "data_nascimento": "07/03/1994",
+                    "senha": "123456",
+                    "confirma_senha": "123456"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "400": { "description": "Paciente já cadastrado" },
+          "201": {
+            "description": "Paciente cadastrado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "$ref": "#/components/schemas/paciente"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/create/medico": {
+      "post": {
+        "tags": ["Medico"],
+        "summary": "Cadastrar um novo médico",
+        "description": "Essa rota será responsável por cadastrar um novo médico",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/medico" },
+              "examples": {
+                "medico": {
+                  "value": {
+                    "nome": "Paulo",
+                    "cpf": "65552148053",
+                    "data_nascimento": "07/03/1994",
+                    "senha": "123456",
+                    "confirma_senha": "123456"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "400": { "description": "Médico já cadastrado" },
+          "201": {
+            "description": "Médico cadastrado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "$ref": "#/components/schemas/medico"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/create/medicamento": {
+      "post": {
+        "tags": ["Medicamento"],
+        "security": [{ "bearerAuth": [] }],
+        "summary": "Cadastrar um novo medicamento",
+        "description": "Essa rota será responsável por cadastrar um novo medicamento",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/medicamento" },
+              "examples": {
+                "medicamento": {
+                  "value": {
+                    "nome": "dipirona",
+                    "categoria": "ANALGESICOS",
+                    "codigo_anvisa": "1018600360023d2123"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "500": { "description": "Usuário não autorizado" },
+          "400": { "description": "Medicamento já cadastrado" },
+          "201": {
+            "description": "Medicamento cadastrado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "$ref": "#/components/schemas/medicamento"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/create/receita": {
+      "post": {
+        "tags": ["Receita"],
+        "security": [{ "bearerAuth": [] }],
+        "summary": "Cadastrar uma nova receita",
+        "description": "Essa rota será responsável por cadastrar uma nova receita",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/receita" },
+              "examples": {
+                "receita": {
+                  "value": {
+                    "medico_id": "bc4ebb40-421a-42e6-b96f-62259a4d8e33",
+                    "paciente_id": "fc9434bb-aa55-48e9-bc17-c10eb7a4a533",
+                    "medicamento_id": "827f3953-c9f6-4a27-a3bb-6bac0016ecd5",
+                    "data_prescricao": "07/03/1994"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "500": { "description": "Usuário não autorizado" },
+          "201": {
+            "description": "Receita cadastrada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "$ref": "#/components/schemas/receita"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/login": {
+      "post": {
+        "tags": ["Login"],
+        "summary": "Realiza o login",
+        "description": "Essa rota será responsável por realizar o login na aplicação",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/login" },
+              "examples": {
+                "receita": {
+                  "value": {
+                    "cpf": "33178374892",
+                    "senha": "123456"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "400": { "description": "Usuário ou senha incorreta" },
+          "201": {
+            "description": "Login Realizado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "$ref": "#/components/schemas/login"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "paciente": {
+        "type": "object",
+        "properties": {
+          "nome": { "type": "string" },
+          "cpf": { "type": "string" },
+          "data_nascimento": { "type": "string" },
+          "senha": { "type": "string" },
+          "confirma_senha": { "type": "string" }
+        }
+      },
+      "medico": {
+        "type": "object",
+        "properties": {
+          "nome": { "type": "string" },
+          "cpf": { "type": "string" },
+          "data_nascimento": { "type": "string" },
+          "senha": { "type": "string" },
+          "confirma_senha": { "type": "string" }
+        }
+      },
+      "medicamento": {
+        "type": "object",
+        "properties": {
+          "nome": { "type": "string" },
+          "categoria": { "type": "string" },
+          "codigo_anvisa": { "type": "string" }
+        }
+      },
+      "receita": {
+        "type": "object",
+        "properties": {
+          "medico_id": { "type": "string" },
+          "paciente_id": { "type": "string" },
+          "medicamento_id": { "type": "string" },
+          "data_prescricao": { "type": "string" }
+        }
+      },
+      "login": {
+        "type": "object",
+        "properties": {
+          "token": { "type": "string" }
+        }
+      }
+    },
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  }
+}
