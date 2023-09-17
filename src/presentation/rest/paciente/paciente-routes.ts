@@ -1,10 +1,19 @@
 import { Router } from 'express';
 import { pacienteController } from './paciente-factory';
+import ensureAuthenticated from '../../middlewares/ensureAuthenticated';
 
 const pacienteRouter = Router();
 
-pacienteRouter.post('/create/paciente', (request, response) => {
-  pacienteController.create(request, response);
+pacienteRouter.post(
+  '/create/paciente',
+  ensureAuthenticated,
+  (request, response) => {
+    pacienteController.create(request, response);
+  }
+);
+
+pacienteRouter.get('/paciente', ensureAuthenticated, (request, response) => {
+  pacienteController.findAll(request, response);
 });
 
 export { pacienteRouter };

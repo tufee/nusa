@@ -1,5 +1,5 @@
 import { PacienteRepository } from '../../data/repositories/paciente-repository';
-import { createUserSchema } from '../../presentation/helper/zod-validator';
+import { createPacienteSchema } from '../../presentation/helper/zod-validator';
 import { IPaciente } from '../entities/interfaces/paciente';
 
 type CreatePacienteInput = Omit<IPaciente, 'id'>;
@@ -7,7 +7,8 @@ export class CreatePacienteUseCase {
   constructor(private readonly pacienteRepository: PacienteRepository) {}
 
   async execute(paciente: CreatePacienteInput) {
-    const pacienteValidado = await createUserSchema.safeParseAsync(paciente);
+    const pacienteValidado =
+      await createPacienteSchema.safeParseAsync(paciente);
 
     if (!pacienteValidado.success) {
       console.warn(pacienteValidado.error);
@@ -20,7 +21,7 @@ export class CreatePacienteUseCase {
       pacienteValidado.data.cpf
     );
 
-    if (pacienteCadastrado) {
+    if (pacienteCadastrado?.length) {
       throw new Error('Paciente já cadastrado');
     }
 

@@ -5,6 +5,9 @@ import { PacienteController } from './paciente-controller';
 const pacienteRepository = new PacienteRepository();
 const pacienteUseCase = new CreatePacienteUseCase(pacienteRepository);
 
-const pacienteController = new PacienteController(pacienteUseCase);
+const pacienteController = new PacienteController(
+  pacienteUseCase,
+  pacienteRepository
+);
 
 export { pacienteController };

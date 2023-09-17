@@ -1,6 +1,6 @@
 import { ZodError } from 'zod';
 import { PacienteRepository } from '../../data/repositories/paciente-repository';
-import { createUserSchema } from '../../presentation/helper/zod-validator';
+import { createPacienteSchema } from '../../presentation/helper/zod-validator';
 import { CreatePacienteUseCase } from './create-paciente-usecase';
 
 jest.mock('../../data/repositories/paciente-repository');
@@ -9,7 +9,10 @@ describe('CreatePacienteUseCase', () => {
   const pacienteRepositoryMock =
     new PacienteRepository() as jest.Mocked<PacienteRepository>;
 
-  const mockCreateUserSchema = jest.spyOn(createUserSchema, 'safeParseAsync');
+  const mockCreateUserSchema = jest.spyOn(
+    createPacienteSchema,
+    'safeParseAsync'
+  );
 
   const createPacienteUseCase = new CreatePacienteUseCase(
     pacienteRepositoryMock
@@ -36,17 +39,21 @@ describe('CreatePacienteUseCase', () => {
     });
 
     pacienteRepositoryMock.findByCPF.mockResolvedValue(null);
-    pacienteRepositoryMock.create.mockResolvedValue({
-      ...pacienteData,
-      id: 'UUID',
-    });
+    pacienteRepositoryMock.create.mockResolvedValue([
+      {
+        ...pacienteData,
+        id: 'UUID',
+      },
+    ]);
 
     const resultado = await createPacienteUseCase.execute(pacienteData);
 
-    expect(resultado).toEqual({
-      ...pacienteData,
-      id: 'UUID',
-    });
+    expect(resultado).toEqual([
+      {
+        ...pacienteData,
+        id: 'UUID',
+      },
+    ]);
 
     expect(mockCreateUserSchema).toHaveBeenCalledWith(pacienteData);
     expect(pacienteRepositoryMock.findByCPF).toHaveBeenCalledWith(
@@ -65,10 +72,12 @@ describe('CreatePacienteUseCase', () => {
       },
     });
 
-    pacienteRepositoryMock.findByCPF.mockResolvedValue({
-      ...pacienteData,
-      id: 'UUID',
-    });
+    pacienteRepositoryMock.findByCPF.mockResolvedValue([
+      {
+        ...pacienteData,
+        id: 'UUID',
+      },
+    ]);
 
     await expect(createPacienteUseCase.execute(pacienteData)).rejects.toThrow(
       'Paciente já cadastrado'
