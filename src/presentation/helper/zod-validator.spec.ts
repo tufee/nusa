@@ -1,35 +1,78 @@
 import {
   createMedicamentoSchema,
+  createMedicoSchema,
+  createPacienteSchema,
   createReceitaSchema,
-  createUserSchema,
   loginInputSchema,
 } from './zod-validator';
 
 describe('ZodValidator', () => {
-  describe('createUserSchema', () => {
-    const usuarioData = {
+  describe('createPacienteSchema', () => {
+    const pacienteData = {
       nome: 'John Doe',
       cpf: '12345678901',
       data_nascimento: '07/03/1994',
     };
 
-    it('Deve aceitar dados de usuários válidos', () => {
-      expect(() => createUserSchema.parse(usuarioData)).not.toThrow();
+    it('Deve aceitar dados de pacientes válidos', () => {
+      expect(() => createPacienteSchema.parse(pacienteData)).not.toThrow();
     });
 
-    it('Deve rejeitar dados de usuários com data de nascimento inválida', () => {
+    it('Deve rejeitar dados de pacientes com data de nascimento inválida', () => {
       expect(() =>
-        createUserSchema.parse({
-          ...usuarioData,
+        createPacienteSchema.parse({
+          ...pacienteData,
           data_nascimento: 'invalid-date',
         })
       ).toThrowError('Data de nascimento inválida');
     });
 
-    it('Deve rejeitar dados de usuários com campos em falta', () => {
+    it('Deve rejeitar dados de pacientes com campos em falta', () => {
       expect(() =>
-        createUserSchema.parse({ nome: usuarioData.nome })
+        createPacienteSchema.parse({ nome: pacienteData.nome })
       ).toThrowError();
+    });
+  });
+
+  describe('createMedicoSchema', () => {
+    const medicoData = {
+      nome: 'John Doe',
+      cpf: '12345678901',
+      senha: 'password123',
+    };
+
+    it('Deve aceitar dados de médicos válidos', () => {
+      expect(() =>
+        createMedicoSchema.parse({
+          ...medicoData,
+          data_nascimento: '07/03/1994',
+          confirma_senha: 'password123',
+        })
+      ).not.toThrow();
+    });
+
+    it('Deve rejeitar dados de médicos com senhas diferentes', () => {
+      expect(() =>
+        createMedicoSchema.parse({
+          ...medicoData,
+          data_nascimento: '07/03/1994',
+          confirma_senha: 'password',
+        })
+      ).toThrowError('Senhas não conferem');
+    });
+
+    it('Deve rejeitar dados de médicos com data de nascimento inválida', () => {
+      expect(() =>
+        createMedicoSchema.parse({
+          ...medicoData,
+          data_nascimento: 'invalid-date',
+          confirma_senha: 'password123',
+        })
+      ).toThrowError('Data de nascimento inválida');
+    });
+
+    it('Deve rejeitar dados de usuário com campos em falta', () => {
+      expect(() => createMedicoSchema.parse(medicoData)).toThrowError();
     });
   });
 
