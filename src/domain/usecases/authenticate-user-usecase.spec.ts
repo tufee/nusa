@@ -1,23 +1,17 @@
 import { ZodError } from 'zod';
 import { MedicoRepository } from '../../data/repositories/medico-repository';
-import { PacienteRepository } from '../../data/repositories/paciente-repository';
 import { AuthenticationJwt } from '../../presentation/helper/authentication-jwt';
 import { Encrypter } from '../../presentation/helper/encrypter';
 import { loginInputSchema } from '../../presentation/helper/zod-validator';
 import { IMedico } from '../entities/interfaces/medico';
-import { IPaciente } from '../entities/interfaces/paciente';
 import { AuthenticateUserUseCase } from './authenticate-user-usecase';
 
 jest.mock('../../data/repositories/medico-repository');
-jest.mock('../../data/repositories/paciente-repository');
 jest.mock('../../presentation/helper/authentication-jwt');
 jest.mock('../../presentation/helper/encrypter');
 
 const medicoRepositoryMock =
   new MedicoRepository() as jest.Mocked<MedicoRepository>;
-
-const pacienteRepositoryMock =
-  new PacienteRepository() as jest.Mocked<PacienteRepository>;
 
 const authenticationJwtMock =
   new AuthenticationJwt() as jest.Mocked<AuthenticationJwt>;
@@ -28,7 +22,6 @@ const loginInputSchemaMock = jest.spyOn(loginInputSchema, 'safeParseAsync');
 
 const authenticateUserUseCase = new AuthenticateUserUseCase(
   medicoRepositoryMock,
-  pacienteRepositoryMock,
   encrypterMock,
   authenticationJwtMock
 );
@@ -68,7 +61,7 @@ describe('AuthenticateUserUseCase', () => {
 
       await expect(
         authenticateUserUseCase.execute(authenticateData)
-      ).rejects.toThrowError('Erro ao validar usuário');
+      ).rejects.toThrowError('Erro ao validar login, verifique seus dados');
     });
   });
 
@@ -82,41 +75,18 @@ describe('AuthenticateUserUseCase', () => {
       tipo: 'medico',
     };
 
-    const pacienteData = {
-      id: 'UUID',
-      nome: 'John Doe',
-      cpf: '76701025005',
-      data_nascimento: new Date('1990-01-01'),
-      senha: 'password',
-      tipo: 'paciente',
-    };
-
     it('deve retornar um médico com o CPF válido', async () => {
-      medicoRepositoryMock.findByCPF.mockResolvedValue(medicoData);
+      medicoRepositoryMock.findByCPF.mockResolvedValue([medicoData]);
 
       const user = await authenticateUserUseCase.getUser(medicoData.cpf);
 
-      expect(user).not.toBeNull();
-      expect(user?.id).toBe(medicoData.id);
-      expect(user?.nome).toBe(medicoData.nome);
-      expect(user?.cpf).toBe(medicoData.cpf);
-      expect(user?.data_nascimento).toBe(medicoData.data_nascimento);
-      expect(user?.senha).toBe(medicoData.senha);
-      expect(user?.tipo).toBe(medicoData.tipo);
-    });
-
-    it('deve retornar um paciente com o CPF válido', async () => {
-      pacienteRepositoryMock.findByCPF.mockResolvedValue(pacienteData);
-
-      const user = await authenticateUserUseCase.getUser(pacienteData.cpf);
-
-      expect(user).not.toBeNull();
-      expect(user?.id).toBe(pacienteData.id);
-      expect(user?.nome).toBe(pacienteData.nome);
-      expect(user?.cpf).toBe(pacienteData.cpf);
-      expect(user?.data_nascimento).toBe(pacienteData.data_nascimento);
-      expect(user?.senha).toBe(pacienteData.senha);
-      expect(user?.tipo).toBe(pacienteData.tipo);
+      expect(user?.[0]).not.toBeNull();
+      expect(user?.[0].id).toBe(medicoData.id);
+      expect(user?.[0]?.nome).toBe(medicoData.nome);
+      expect(user?.[0]?.cpf).toBe(medicoData.cpf);
+      expect(user?.[0]?.data_nascimento).toBe(medicoData.data_nascimento);
+      expect(user?.[0]?.senha).toBe(medicoData.senha);
+      expect(user?.[0]?.tipo).toBe(medicoData.tipo);
     });
 
     it('deve lançar erro caso não encontre nenhum usuário', async () => {
@@ -128,7 +98,7 @@ describe('AuthenticateUserUseCase', () => {
         },
       });
 
-      pacienteRepositoryMock.findByCPF.mockResolvedValue(null);
+      medicoRepositoryMock.findByCPF.mockResolvedValue(null);
 
       const loginInpuitData = {
         cpf: '76701025005',
@@ -137,14 +107,14 @@ describe('AuthenticateUserUseCase', () => {
 
       await expect(
         authenticateUserUseCase.execute(loginInpuitData)
-      ).rejects.toThrowError('Usuário não encontrado');
+      ).rejects.toThrowError('Erro ao validar login, verifique seus dados');
     });
   });
 
   describe('authenticateUserUseCase.checkPassword', () => {
     const user = {
       senha: 'hash',
-    } as IMedico | IPaciente;
+    } as IMedico;
 
     it('deve passar na validação com senha correta', async () => {
       const senhaCorreta = 'password';
@@ -171,7 +141,7 @@ describe('AuthenticateUserUseCase', () => {
     const userMedico = {
       id: 'UUIDMedico',
       tipo: 'medico',
-    } as IMedico | IPaciente;
+    } as IMedico;
 
     it('deve gerar um token JWT válido para um médico', () => {
       authenticationJwtMock.generateToken.mockReturnValue('token');

@@ -1,10 +1,8 @@
 import { IMedicoRepository } from '../../data/repositories/interfaces/medico';
-import { IPacienteRepository } from '../../data/repositories/interfaces/paciente';
 import { AuthenticationJwt } from '../../presentation/helper/authentication-jwt';
 import { Encrypter } from '../../presentation/helper/encrypter';
 import { loginInputSchema } from '../../presentation/helper/zod-validator';
 import { IMedico } from '../entities/interfaces/medico';
-import { IPaciente } from '../entities/interfaces/paciente';
 
 interface LoginInput {
   cpf: string;
@@ -13,7 +11,6 @@ interface LoginInput {
 
 export class AuthenticateUserUseCase {
   constructor(
-    private readonly pacienteRepository: IPacienteRepository,
     private readonly medicoRepository: IMedicoRepository,
     private readonly encrypter: Encrypter,
     private readonly authenticationJwt: AuthenticationJwt
@@ -25,12 +22,12 @@ export class AuthenticateUserUseCase {
     const user = await this.getUser(validatedLoginData.cpf);
 
     if (!user) {
-      throw new Error('Usuário não encontrado');
+      throw new Error('Erro ao validar login, verifique seus dados');
     }
 
-    await this.checkPassword(loginData.senha, user);
+    await this.checkPassword(loginData.senha, user[0]);
 
-    const token = this.generateJwtToken(user);
+    const token = this.generateJwtToken(user[0]);
 
     return { token };
   }
@@ -41,23 +38,17 @@ export class AuthenticateUserUseCase {
 
     if (!loginInputValidated.success) {
       console.warn(loginInputValidated.error);
-      throw new Error('Erro ao validar usuário');
+      throw new Error('Erro ao validar login, verifique seus dados');
     }
 
     return loginInputValidated.data;
   }
 
-  async getUser(cpf: string): Promise<IMedico | IPaciente | null> {
-    const user = await this.medicoRepository.findByCPF(cpf);
-
-    if (user) {
-      return user;
-    } else {
-      return await this.pacienteRepository.findByCPF(cpf);
-    }
+  async getUser(cpf: string): Promise<IMedico[] | null> {
+    return await this.medicoRepository.findByCPF(cpf);
   }
 
-  async checkPassword(senha: string, user: IMedico | IPaciente) {
+  async checkPassword(senha: string, user: IMedico) {
     const passwordMatched = await this.encrypter.decrypt(senha, user.senha);
 
     if (!passwordMatched) {
@@ -67,7 +58,7 @@ export class AuthenticateUserUseCase {
     return true;
   }
 
-  generateJwtToken(user: IMedico | IPaciente): string {
+  generateJwtToken(user: IMedico): string {
     return this.authenticationJwt.generateToken({
       userId: user.id,
       tipo: user.tipo,
