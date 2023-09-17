@@ -6,6 +6,7 @@ export class Medico implements IMedico {
   cpf: string;
   data_nascimento: Date;
   senha: string;
+  tipo: string;
 
   constructor(properties: IMedico) {
     this.id = properties.id;
@@ -13,5 +14,6 @@ export class Medico implements IMedico {
     this.cpf = properties.cpf;
     this.data_nascimento = properties.data_nascimento;
     this.senha = properties.senha;
+    this.tipo = properties.tipo;
   }
 }

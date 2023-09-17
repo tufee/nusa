@@ -1,20 +1,17 @@
-import { IMedicamento } from './interfaces/medicamento';
-import { IMedico } from './interfaces/medico';
-import { IPaciente } from './interfaces/paciente';
 import { IReceita } from './interfaces/receita';
 
 export class Receita implements IReceita {
   id: string;
-  medico: IMedico;
-  paciente: IPaciente;
-  medicamento: IMedicamento;
+  medico_id: string;
+  paciente_id: string;
+  medicamento_id: string;
   data_prescricao: Date;
 
   constructor(properties: IReceita) {
     this.id = properties.id;
-    this.medico = properties.medico;
-    this.paciente = properties.paciente;
-    this.medicamento = properties.medicamento;
+    this.medico_id = properties.medico_id;
+    this.paciente_id = properties.paciente_id;
+    this.medicamento_id = properties.medicamento_id;
     this.data_prescricao = properties.data_prescricao;
   }
 }
