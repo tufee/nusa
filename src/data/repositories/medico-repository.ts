@@ -6,15 +6,11 @@ import { IMedicoRepository } from './interfaces/medico';
 const knex = Knex(config);
 
 export class MedicoRepository implements IMedicoRepository {
-  async create(medico: Omit<IMedico, 'id' | 'tipo'>): Promise<IMedico> {
-    const [createdMedico] = await knex<IMedico>('medicos')
-      .insert(medico)
-      .returning('*');
-    return createdMedico;
+  async create(medico: Omit<IMedico, 'id' | 'tipo'>): Promise<IMedico[]> {
+    return await knex<IMedico>('medicos').insert(medico).returning('*');
   }
 
-  async findByCPF(cpf: string): Promise<IMedico | null> {
-    const [medico] = await knex<IMedico>('medicos').select('*').where({ cpf });
-    return medico;
+  async findByCPF(cpf: string): Promise<IMedico[] | null> {
+    return await knex<IMedico>('medicos').select('*').where({ cpf });
   }
 }

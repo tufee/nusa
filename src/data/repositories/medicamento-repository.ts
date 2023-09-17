@@ -6,19 +6,17 @@ import { IMedicamentoRepository } from './interfaces/medicamento';
 const knex = Knex(config);
 
 export class MedicamentoRepository implements IMedicamentoRepository {
-  async create(medicamento: Omit<IMedicamento, 'id'>): Promise<IMedicamento> {
-    const [createdMedicamento] = await knex<IMedicamento>('medicamentos')
+  async create(medicamento: Omit<IMedicamento, 'id'>): Promise<IMedicamento[]> {
+    return await knex<IMedicamento>('medicamentos')
       .insert(medicamento)
       .returning('*');
-    return createdMedicamento;
   }
 
   async findByCodigoAnvisa(
     codigo_anvisa: string
-  ): Promise<IMedicamento | null> {
-    const [medicamento] = await knex<IMedicamento>('medicamentos')
+  ): Promise<IMedicamento[] | null> {
+    return await knex<IMedicamento>('medicamentos')
       .select('*')
       .where({ codigo_anvisa });
-    return medicamento;
   }
 }
