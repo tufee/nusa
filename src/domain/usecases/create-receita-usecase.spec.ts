@@ -34,22 +34,26 @@ describe('CreateReceitaUseCase', () => {
       data: { ...receitaData, data_prescricao: '07/03/1994' },
     });
 
-    receitaRepositoryMock.create.mockResolvedValue({
-      ...receitaData,
-      id: 'UUID',
-      data_prescricao,
-    });
+    receitaRepositoryMock.create.mockResolvedValue([
+      {
+        ...receitaData,
+        id: 'UUID',
+        data_prescricao,
+      },
+    ]);
 
     const resultado = await createReceitaUseCase.execute({
       ...receitaData,
       data_prescricao,
     });
 
-    expect(resultado).toEqual({
-      ...receitaData,
-      id: 'UUID',
-      data_prescricao: expect.any(Date),
-    });
+    expect(resultado).toEqual([
+      {
+        ...receitaData,
+        id: 'UUID',
+        data_prescricao: expect.any(Date),
+      },
+    ]);
 
     expect(receitaRepositoryMock.create).toHaveBeenCalledWith({
       ...receitaData,

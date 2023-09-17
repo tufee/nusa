@@ -19,7 +19,7 @@ export class CreateMedicamentoUseCase {
         medicamentoValidado.data.codigo_anvisa
       );
 
-    if (medicamentoCadastrado) {
+    if (medicamentoCadastrado?.length) {
       throw new Error('medicamento já cadastrado');
     }
 

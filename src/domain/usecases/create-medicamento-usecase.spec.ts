@@ -29,14 +29,16 @@ describe('CreateMedicamentoUseCase', () => {
   });
 
   it('Deve criar um medicamento com sucesso', async () => {
-    medicamentoRepositoryMock.create.mockResolvedValue({
-      ...medicamentoData,
-      id: 'UUID',
-    });
+    medicamentoRepositoryMock.create.mockResolvedValue([
+      {
+        ...medicamentoData,
+        id: 'UUID',
+      },
+    ]);
 
     const resultado = await createMedicamentoUseCase.execute(medicamentoData);
 
-    expect(resultado).toEqual({ ...medicamentoData, id: 'UUID' });
+    expect(resultado).toEqual([{ ...medicamentoData, id: 'UUID' }]);
 
     expect(medicamentoRepositoryMock.findByCodigoAnvisa).toHaveBeenCalledWith(
       medicamentoData.codigo_anvisa
@@ -48,10 +50,12 @@ describe('CreateMedicamentoUseCase', () => {
   });
 
   it('Deve lançar erro ao tentar criar um medicamento com código ANVISA já cadastrado', async () => {
-    medicamentoRepositoryMock.findByCodigoAnvisa.mockResolvedValue({
-      ...medicamentoData,
-      id: 'UUID',
-    });
+    medicamentoRepositoryMock.findByCodigoAnvisa.mockResolvedValue([
+      {
+        ...medicamentoData,
+        id: 'UUID',
+      },
+    ]);
 
     await expect(
       createMedicamentoUseCase.execute(medicamentoData)
