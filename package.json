@@ -11,7 +11,8 @@
     "eslint:fix": "npx eslint --fix",
     "prettier": "npx prettier --check .",
     "prettier:fix": "npx prettier --write .",
-    "migration:up": "npx knex migrate:up"
+    "migrate:up": "npx knex migrate:latest",
+    "migrate:undo": "npx knex migrate:rollback --all"
   },
   "keywords": [],
   "author": "",

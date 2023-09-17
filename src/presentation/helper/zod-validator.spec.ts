@@ -10,41 +10,26 @@ describe('ZodValidator', () => {
     const usuarioData = {
       nome: 'John Doe',
       cpf: '12345678901',
-      senha: 'password123',
+      data_nascimento: '07/03/1994',
     };
 
-    it('Deve aceitar dados de usuário válidos', () => {
-      expect(() =>
-        createUserSchema.parse({
-          ...usuarioData,
-          data_nascimento: '07/03/1994',
-          confirma_senha: 'password123',
-        })
-      ).not.toThrow();
+    it('Deve aceitar dados de usuários válidos', () => {
+      expect(() => createUserSchema.parse(usuarioData)).not.toThrow();
     });
 
-    it('Deve rejeitar dados de usuário com senhas diferentes', () => {
-      expect(() =>
-        createUserSchema.parse({
-          ...usuarioData,
-          data_nascimento: '07/03/1994',
-          confirma_senha: 'password',
-        })
-      ).toThrowError('Senhas não conferem');
-    });
-
-    it('Deve rejeitar dados de usuário com data de nascimento inválida', () => {
+    it('Deve rejeitar dados de usuários com data de nascimento inválida', () => {
       expect(() =>
         createUserSchema.parse({
           ...usuarioData,
           data_nascimento: 'invalid-date',
-          confirma_senha: 'password123',
         })
       ).toThrowError('Data de nascimento inválida');
     });
 
-    it('Deve rejeitar dados de usuário com campos em falta', () => {
-      expect(() => createUserSchema.parse(usuarioData)).toThrowError();
+    it('Deve rejeitar dados de usuários com campos em falta', () => {
+      expect(() =>
+        createUserSchema.parse({ nome: usuarioData.nome })
+      ).toThrowError();
     });
   });
 
