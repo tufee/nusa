@@ -19,4 +19,8 @@ export class MedicamentoRepository implements IMedicamentoRepository {
       .select('*')
       .where({ codigo_anvisa });
   }
+
+  async findAll(): Promise<IMedicamento[] | null> {
+    return await knex<IMedicamento>('medicamentos').select();
+  }
 }

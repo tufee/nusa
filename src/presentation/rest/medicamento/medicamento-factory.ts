@@ -4,6 +4,9 @@ import { MedicamentoController } from './medicamento-controller';
 
 const medicamentoRepository = new MedicamentoRepository();
 const medicamentoUseCase = new CreateMedicamentoUseCase(medicamentoRepository);
-const medicamentoController = new MedicamentoController(medicamentoUseCase);
+const medicamentoController = new MedicamentoController(
+  medicamentoUseCase,
+  medicamentoRepository
+);
 
 export { medicamentoController };

@@ -12,4 +12,12 @@ medicamentoRouter.post(
   }
 );
 
+medicamentoRouter.get(
+  '/medicamento',
+  ensureAuthenticated,
+  (request, response) => {
+    medicamentoController.findAll(request, response);
+  }
+);
+
 export { medicamentoRouter };
