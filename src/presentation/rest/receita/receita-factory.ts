@@ -4,6 +4,9 @@ import { ReceitaController } from './receita-controller';
 
 const receitaRepository = new ReceitaRepository();
 const receitaUseCase = new CreateReceitaUseCase(receitaRepository);
-const receitaController = new ReceitaController(receitaUseCase);
+const receitaController = new ReceitaController(
+  receitaUseCase,
+  receitaRepository
+);
 
 export { receitaController };

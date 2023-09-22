@@ -12,4 +12,8 @@ receitaRouter.post(
   }
 );
 
+receitaRouter.get('/receita', ensureAuthenticated, (request, response) => {
+  receitaController.findAll(request, response);
+});
+
 export { receitaRouter };
