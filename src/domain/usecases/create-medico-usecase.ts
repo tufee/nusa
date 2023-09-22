@@ -1,6 +1,9 @@
 import { MedicoRepository } from '../../data/repositories/medico-repository';
 import { Encrypter } from '../../presentation/helper/encrypter';
-import { createMedicoSchema } from '../../presentation/helper/zod-validator';
+import {
+  createMedicoSchema,
+  formatCPF,
+} from '../../presentation/helper/zod-validator';
 import { IMedico } from '../entities/interfaces/medico';
 
 interface CreateMedicoInput extends Omit<IMedico, 'id' | 'tipo'> {
@@ -20,6 +23,8 @@ export class CreateMedicoUseCase {
       console.warn(medicoValidado.error);
       throw new Error('Erro ao cadastrar médico, verifique os dados enviados');
     }
+
+    medicoValidado.data.cpf = formatCPF(medicoValidado.data.cpf);
 
     const medicoCadastrado = await this.medicoRepository.findByCPF(
       medicoValidado.data.cpf

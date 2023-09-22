@@ -1,7 +1,10 @@
 import { IMedicoRepository } from '../../data/repositories/interfaces/medico';
 import { AuthenticationJwt } from '../../presentation/helper/authentication-jwt';
 import { Encrypter } from '../../presentation/helper/encrypter';
-import { loginInputSchema } from '../../presentation/helper/zod-validator';
+import {
+  loginInputSchema,
+  formatCPF,
+} from '../../presentation/helper/zod-validator';
 import { IMedico } from '../entities/interfaces/medico';
 
 interface LoginInput {
@@ -18,6 +21,8 @@ export class AuthenticateUserUseCase {
 
   async execute(loginData: LoginInput): Promise<{ token: string }> {
     const validatedLoginData = await this.validateLoginInput(loginData);
+
+    validatedLoginData.cpf = formatCPF(validatedLoginData.cpf);
 
     const user = await this.getUser(validatedLoginData.cpf);
 

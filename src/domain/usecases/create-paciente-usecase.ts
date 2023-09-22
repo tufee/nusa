@@ -1,5 +1,8 @@
 import { PacienteRepository } from '../../data/repositories/paciente-repository';
-import { createPacienteSchema } from '../../presentation/helper/zod-validator';
+import {
+  createPacienteSchema,
+  formatCPF,
+} from '../../presentation/helper/zod-validator';
 import { IPaciente } from '../entities/interfaces/paciente';
 
 type CreatePacienteInput = Omit<IPaciente, 'id'>;
@@ -16,6 +19,8 @@ export class CreatePacienteUseCase {
         'Erro ao cadastrar paciente, verifique os dados enviados'
       );
     }
+
+    pacienteValidado.data.cpf = formatCPF(pacienteValidado.data.cpf);
 
     const pacienteCadastrado = await this.pacienteRepository.findByCPF(
       pacienteValidado.data.cpf

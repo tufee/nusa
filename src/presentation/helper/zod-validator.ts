@@ -1,9 +1,13 @@
 import { z } from 'zod';
 
+export function formatCPF(cpf: string): string {
+  return cpf.replace(/\D/g, '');
+}
+
 export const createPacienteSchema = z
   .object({
     nome: z.string(),
-    cpf: z.string().length(11),
+    cpf: z.string(),
     data_nascimento: z.string(),
   })
   .required()
@@ -16,12 +20,27 @@ export const createPacienteSchema = z
       message: 'Data de nascimento inválida',
       path: ['data_nascimento'],
     }
+  )
+  .refine(
+    data => {
+      const cleanedCPF = data.cpf.replace(/\D/g, '');
+
+      if (cleanedCPF.length !== 11) {
+        return false;
+      }
+
+      return true;
+    },
+    {
+      message: 'CPF inválido',
+      path: ['cpf'],
+    }
   );
 
 export const createMedicoSchema = z
   .object({
     nome: z.string(),
-    cpf: z.string().length(11),
+    cpf: z.string(),
     data_nascimento: z.string(),
     senha: z.string().min(6),
     confirma_senha: z.string().min(6),
@@ -40,6 +59,21 @@ export const createMedicoSchema = z
     {
       message: 'Data de nascimento inválida',
       path: ['data_nascimento'],
+    }
+  )
+  .refine(
+    data => {
+      const cleanedCPF = data.cpf.replace(/\D/g, '');
+
+      if (cleanedCPF.length !== 11) {
+        return false;
+      }
+
+      return true;
+    },
+    {
+      message: 'CPF inválido',
+      path: ['cpf'],
     }
   );
 
@@ -72,7 +106,22 @@ export const createReceitaSchema = z
 
 export const loginInputSchema = z
   .object({
-    cpf: z.string().length(11),
+    cpf: z.string(),
     senha: z.string().min(6),
   })
-  .required();
+  .required()
+  .refine(
+    data => {
+      const cleanedCPF = data.cpf.replace(/\D/g, '');
+
+      if (cleanedCPF.length !== 11) {
+        return false;
+      }
+
+      return true;
+    },
+    {
+      message: 'CPF inválido',
+      path: ['cpf'],
+    }
+  );
