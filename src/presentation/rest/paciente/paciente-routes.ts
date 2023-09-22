@@ -16,4 +16,12 @@ pacienteRouter.get('/paciente', ensureAuthenticated, (request, response) => {
   pacienteController.findAll(request, response);
 });
 
+pacienteRouter.get(
+  '/paciente/search',
+  ensureAuthenticated,
+  (request, response) => {
+    pacienteController.search(request, response);
+  }
+);
+
 export { pacienteRouter };

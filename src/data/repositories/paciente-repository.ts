@@ -17,4 +17,8 @@ export class PacienteRepository implements IPacienteRepository {
   async findAll(): Promise<IPaciente[] | null> {
     return await knex<IPaciente>('pacientes').select();
   }
+
+  async search(name: string): Promise<IPaciente[] | null> {
+    return await knex<IPaciente>('pacientes').whereLike('nome', `%${name}%`);
+  }
 }

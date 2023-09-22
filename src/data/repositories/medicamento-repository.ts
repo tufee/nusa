@@ -23,4 +23,11 @@ export class MedicamentoRepository implements IMedicamentoRepository {
   async findAll(): Promise<IMedicamento[] | null> {
     return await knex<IMedicamento>('medicamentos').select();
   }
+
+  async search(name: string): Promise<IMedicamento[] | null> {
+    return await knex<IMedicamento>('medicamentos').whereLike(
+      'nome',
+      `%${name}%`
+    );
+  }
 }

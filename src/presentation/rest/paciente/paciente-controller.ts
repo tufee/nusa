@@ -32,4 +32,18 @@ export class PacienteController {
       }
     }
   }
+
+  async search(request: Request, response: Response) {
+    try {
+      const paciente = await this.pacienteRepository.search(
+        request.query.name as string
+      );
+      return response.status(201).json(paciente);
+    } catch (error) {
+      console.warn(error);
+      if (error instanceof Error) {
+        return response.status(400).json(error.message);
+      }
+    }
+  }
 }

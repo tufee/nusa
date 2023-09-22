@@ -20,4 +20,11 @@ medicamentoRouter.get(
   }
 );
 
+medicamentoRouter.get(
+  '/medicamento/search',
+  ensureAuthenticated,
+  (request, response) => {
+    medicamentoController.search(request, response);
+  }
+);
 export { medicamentoRouter };
