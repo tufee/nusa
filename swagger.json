@@ -10,20 +10,18 @@
     "/create/paciente": {
       "post": {
         "tags": ["Paciente"],
-        "summary": "Cadastrar um novo paciente",
+        "security": [{ "bearerAuth": [] }],
+        "summary": "Cadastra um novo paciente",
         "description": "Essa rota será responsável por cadastrar um novo paciente",
         "requestBody": {
           "content": {
             "application/json": {
-              "schema": { "$ref": "#/components/schemas/paciente" },
               "examples": {
                 "paciente": {
                   "value": {
                     "nome": "Paulo",
                     "cpf": "65552148053",
-                    "data_nascimento": "07/03/1994",
-                    "senha": "123456",
-                    "confirma_senha": "123456"
+                    "data_nascimento": "07/03/1994"
                   }
                 }
               }
@@ -33,12 +31,85 @@
         "responses": {
           "400": { "description": "Paciente já cadastrado" },
           "201": {
-            "description": "Paciente cadastrado",
+            "description": "Paciente cadastrado com sucesso",
             "content": {
               "application/json": {
-                "schema": {
-                  "type": "object",
-                  "$ref": "#/components/schemas/paciente"
+                "examples": {
+                  "paciente": {
+                    "value": {
+                      "id": "4c6a256a-225c-4f39-9f50-2d549197604b",
+                      "nome": "Paulo",
+                      "cpf": "65552148053",
+                      "data_nascimento": "07/03/1994"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/paciente": {
+      "get": {
+        "tags": ["Paciente"],
+        "security": [{ "bearerAuth": [] }],
+        "summary": "Busca todos os paciente",
+        "description": "Essa rota será responsável por buscar todos os paciente",
+        "responses": {
+          "201": {
+            "description": "Retorna todos os pacientes",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "paciente": {
+                    "value": [
+                      {
+                        "id": "4c6a256a-225c-4f39-9f50-2d549197604b",
+                        "nome": "Paulo",
+                        "cpf": "65552148053",
+                        "data_nascimento": "07/03/1994"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/paciente/search": {
+      "get": {
+        "tags": ["Paciente"],
+        "security": [{ "bearerAuth": [] }],
+        "summary": "Busca pacientes com base no nome",
+        "description": "Essa rota será responsável por buscar pacientes com base no nome recebido",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "query",
+            "description": "Nome do paciente",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Retorna os pacientes filtrados pelo nome",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "paciente": {
+                    "value": [
+                      {
+                        "id": "4c6a256a-225c-4f39-9f50-2d549197604b",
+                        "nome": "Paulo",
+                        "cpf": "65552148053",
+                        "data_nascimento": "07/03/1994"
+                      }
+                    ]
+                  }
                 }
               }
             }
@@ -49,12 +120,11 @@
     "/create/medico": {
       "post": {
         "tags": ["Medico"],
-        "summary": "Cadastrar um novo médico",
+        "summary": "Cadastra um novo médico",
         "description": "Essa rota será responsável por cadastrar um novo médico",
         "requestBody": {
           "content": {
             "application/json": {
-              "schema": { "$ref": "#/components/schemas/medico" },
               "examples": {
                 "medico": {
                   "value": {
@@ -72,12 +142,20 @@
         "responses": {
           "400": { "description": "Médico já cadastrado" },
           "201": {
-            "description": "Médico cadastrado",
+            "description": "Médico cadastrado com sucesso",
             "content": {
               "application/json": {
-                "schema": {
-                  "type": "object",
-                  "$ref": "#/components/schemas/medico"
+                "examples": {
+                  "medico": {
+                    "value": {
+                      "id": "53817ce5-67de-43b5-880c-f67d50c16baa",
+                      "nome": "Paulo",
+                      "cpf": "65552148053",
+                      "data_nascimento": "07/03/1994",
+                      "senha": "$2b$10$AqsQGhfBUtFKa4/iqwJNYOKU/rTTx6shrDyL8UkbbY2ki06AUqFly",
+                      "tipo": "medico"
+                    }
+                  }
                 }
               }
             }
@@ -89,12 +167,11 @@
       "post": {
         "tags": ["Medicamento"],
         "security": [{ "bearerAuth": [] }],
-        "summary": "Cadastrar um novo medicamento",
+        "summary": "Cadastra um novo medicamento",
         "description": "Essa rota será responsável por cadastrar um novo medicamento",
         "requestBody": {
           "content": {
             "application/json": {
-              "schema": { "$ref": "#/components/schemas/medicamento" },
               "examples": {
                 "medicamento": {
                   "value": {
@@ -111,12 +188,85 @@
           "500": { "description": "Usuário não autorizado" },
           "400": { "description": "Medicamento já cadastrado" },
           "201": {
-            "description": "Medicamento cadastrado",
+            "description": "Medicamento cadastrado com sucesso",
             "content": {
               "application/json": {
-                "schema": {
-                  "type": "object",
-                  "$ref": "#/components/schemas/medicamento"
+                "examples": {
+                  "medicamento": {
+                    "value": {
+                      "id": "88c7db79-847e-4b54-9aad-adb7d05fdf12",
+                      "nome": "dipirona",
+                      "categoria": "ANALGESICOS",
+                      "codigo_anvisa": "1018600360023d2123"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/medicamento": {
+      "get": {
+        "tags": ["Medicamento"],
+        "security": [{ "bearerAuth": [] }],
+        "summary": "Busca todos os medicamentos",
+        "description": "Essa rota será responsável por buscar todos os medicamentos",
+        "responses": {
+          "201": {
+            "description": "Retorna todos os medicamentos",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "medicamento": {
+                    "value": [
+                      {
+                        "id": "88c7db79-847e-4b54-9aad-adb7d05fdf12",
+                        "nome": "dipirona",
+                        "categoria": "ANALGESICOS",
+                        "codigo_anvisa": "1018600360023d2123"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/medicamento/search": {
+      "get": {
+        "tags": ["Medicamento"],
+        "security": [{ "bearerAuth": [] }],
+        "summary": "Busca medicamentos com base no nome",
+        "description": "Essa rota será responsável por buscar medicamentos com base no nome recebido",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "query",
+            "description": "Nome do medicamento",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Retorna todos os medicamentos com base no nome recebido",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "medicamento": {
+                    "value": [
+                      {
+                        "id": "88c7db79-847e-4b54-9aad-adb7d05fdf12",
+                        "nome": "dipirona",
+                        "categoria": "ANALGESICOS",
+                        "codigo_anvisa": "1018600360023d2123"
+                      }
+                    ]
+                  }
                 }
               }
             }
@@ -128,19 +278,18 @@
       "post": {
         "tags": ["Receita"],
         "security": [{ "bearerAuth": [] }],
-        "summary": "Cadastrar uma nova receita",
+        "summary": "Cadastra uma nova receita",
         "description": "Essa rota será responsável por cadastrar uma nova receita",
         "requestBody": {
           "content": {
             "application/json": {
-              "schema": { "$ref": "#/components/schemas/receita" },
               "examples": {
                 "receita": {
                   "value": {
                     "medico_id": "bc4ebb40-421a-42e6-b96f-62259a4d8e33",
                     "paciente_id": "fc9434bb-aa55-48e9-bc17-c10eb7a4a533",
                     "medicamento_id": "827f3953-c9f6-4a27-a3bb-6bac0016ecd5",
-                    "data_prescricao": "07/03/1994"
+                    "data_prescricao": "07/03/2023"
                   }
                 }
               }
@@ -150,12 +299,49 @@
         "responses": {
           "500": { "description": "Usuário não autorizado" },
           "201": {
-            "description": "Receita cadastrada",
+            "description": "Receita cadastrada com sucesso",
             "content": {
               "application/json": {
-                "schema": {
-                  "type": "object",
-                  "$ref": "#/components/schemas/receita"
+                "examples": {
+                  "receita": {
+                    "value": {
+                      "id": "56e06277-536e-42a4-8efb-d93c74966418",
+                      "medico_id": "bc4ebb40-421a-42e6-b96f-62259a4d8e33",
+                      "paciente_id": "fc9434bb-aa55-48e9-bc17-c10eb7a4a533",
+                      "medicamento_id": "827f3953-c9f6-4a27-a3bb-6bac0016ecd5",
+                      "data_prescricao": "2023-07-03T03:00:00.000Z"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/receita": {
+      "get": {
+        "tags": ["Receita"],
+        "security": [{ "bearerAuth": [] }],
+        "summary": "Busca todas as receitas",
+        "description": "Essa rota será responsável por buscar todas as receitas",
+        "responses": {
+          "500": { "description": "Usuário não autorizado" },
+          "201": {
+            "description": "Retorna todas as receitas",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "receita": {
+                    "value": [
+                      {
+                        "data_prescricao": "2023-09-20T03:00:00.000Z",
+                        "nome_medico": "tufe",
+                        "nome_paciente": "José",
+                        "nome_medicamento": "Dipirona"
+                      }
+                    ]
+                  }
                 }
               }
             }
@@ -171,9 +357,8 @@
         "requestBody": {
           "content": {
             "application/json": {
-              "schema": { "$ref": "#/components/schemas/login" },
               "examples": {
-                "receita": {
+                "login": {
                   "value": {
                     "cpf": "33178374892",
                     "senha": "123456"
@@ -186,12 +371,15 @@
         "responses": {
           "400": { "description": "Usuário ou senha incorreta" },
           "201": {
-            "description": "Login Realizado",
+            "description": "Login realizado com sucesso",
             "content": {
               "application/json": {
-                "schema": {
-                  "type": "object",
-                  "$ref": "#/components/schemas/login"
+                "examples": {
+                  "login": {
+                    "value": {
+                      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJmZjNhODZlYy1kYjcwLTQ1Y2YtYmQ2Ny0wNjc2MjFiYTVkYjgiLCJ0aXBvIjoibWVkaWNvIiwiaWF0IjoxNjk1NTA0NTg4LCJleHAiOjE2OTU1OTA5ODh9.bP268yUMn5On4G2oaU-cUOySEiScF1cqsFGYqM-9V0o"
+                    }
+                  }
                 }
               }
             }
@@ -201,51 +389,6 @@
     }
   },
   "components": {
-    "schemas": {
-      "paciente": {
-        "type": "object",
-        "properties": {
-          "nome": { "type": "string" },
-          "cpf": { "type": "string" },
-          "data_nascimento": { "type": "string" },
-          "senha": { "type": "string" },
-          "confirma_senha": { "type": "string" }
-        }
-      },
-      "medico": {
-        "type": "object",
-        "properties": {
-          "nome": { "type": "string" },
-          "cpf": { "type": "string" },
-          "data_nascimento": { "type": "string" },
-          "senha": { "type": "string" },
-          "confirma_senha": { "type": "string" }
-        }
-      },
-      "medicamento": {
-        "type": "object",
-        "properties": {
-          "nome": { "type": "string" },
-          "categoria": { "type": "string" },
-          "codigo_anvisa": { "type": "string" }
-        }
-      },
-      "receita": {
-        "type": "object",
-        "properties": {
-          "medico_id": { "type": "string" },
-          "paciente_id": { "type": "string" },
-          "medicamento_id": { "type": "string" },
-          "data_prescricao": { "type": "string" }
-        }
-      },
-      "login": {
-        "type": "object",
-        "properties": {
-          "token": { "type": "string" }
-        }
-      }
-    },
     "securitySchemes": {
       "bearerAuth": {
         "type": "http",
